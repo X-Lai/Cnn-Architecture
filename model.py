@@ -53,13 +53,19 @@ class bn_relu_conv(nn.Module):
         return conv
 
 class affine_relu(nn.Module):
-    def __init__(self, in_dim, out_dim, dropout=0):
+    def __init__(self, in_dim, out_dim, bn=True, dropout=0):
         super(affine_relu, self).__init__()
         self.affine = nn.Linear(in_dim, out_dim)
+        self.BN = bn
+        if bn == True:
+            self.bn = nn.BatchNorm1d(out_dim)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(dropout)
     def forward(self, x):
-        return self.dropout(self.relu(self.affine(x)))
+        affine = self.affine(x)
+        if self.BN:
+            affine = self.bn(affine)
+        return self.dropout(self.relu(affine))
 
 class Flatten(nn.Module):
     def forward(self, x):
