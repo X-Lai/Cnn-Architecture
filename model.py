@@ -37,26 +37,29 @@ class conv_relu_conv_relu_pool(nn.Module):
         return result
 
 class bn_relu_conv(nn.Module):
-    def __init__(self, in_channel, out_channel, kernel_size=3, stride=1, padding=1):
+    def __init__(self, in_channel, out_channel, kernel_size=3, stride=1, padding=1, dropout=0):
         super(bn_relu_conv, self).__init__()
         self.bn = nn.BatchNorm2d(in_channel)
         self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(dropout)
         self.conv = nn.Conv2d(in_channels=in_channel, out_channels=out_channel,
                               kernel_size=kernel_size, stride=stride, padding= padding)
 
     def forward(self, x):
         bn = self.bn(x)
         relu = self.relu(bn)
-        conv = self.conv(relu)
+        dropout = self.dropout(relu)
+        conv = self.conv(dropout)
         return conv
 
 class affine_relu(nn.Module):
-    def __init__(self, in_dim, out_dim):
+    def __init__(self, in_dim, out_dim, dropout=0):
         super(affine_relu, self).__init__()
         self.affine = nn.Linear(in_dim, out_dim)
         self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(dropout)
     def forward(self, x):
-        return self.relu(self.affine(x))
+        return self.dropout(self.relu(self.affine(x)))
 
 class Flatten(nn.Module):
     def forward(self, x):

@@ -65,6 +65,7 @@ loader_test = DataLoader(dataset, batch_size=BATCH_SIZE,
 
 lr = 0.001
 dropout = 0.3
+channel0 = 32
 channel1 = 32
 channel2 = 32
 channel3 = 16
@@ -75,17 +76,15 @@ hidden3 = 256
 num_classes = 10
 
 model = nn.Sequential(
-    model.bn_relu_conv(3, channel1),
-    model.bn_relu_conv(channel1, channel2),
-    model.bn_relu_conv(channel2, channel3),
-    model.bn_relu_conv(channel3, channel4),
+    nn.Conv2d(3, channel0),
+    model.bn_relu_conv(channel0, channel1, dropout=dropout),
+    model.bn_relu_conv(channel1, channel2, dropout=dropout),
+    model.bn_relu_conv(channel2, channel3, dropout=dropout),
+    model.bn_relu_conv(channel3, channel4, dropout=dropout),
     model.Flatten(),
-    model.affine_relu(channel4*32*32, hidden1),
-    nn.Dropout(dropout),
-    model.affine_relu(hidden1, hidden2),
-    nn.Dropout(dropout),
-    model.affine_relu(hidden2, hidden3),
-    nn.Dropout(dropout),
+    model.affine_relu(channel4*32*32, hidden1, dropout=dropout),
+    model.affine_relu(hidden1, hidden2, dropout=dropout),
+    model.affine_relu(hidden2, hidden3, dropout=dropout),
     model.affine_relu(hidden3, num_classes)
 )
 optimizer = optim.Adam(model.parameters(), lr=lr)
