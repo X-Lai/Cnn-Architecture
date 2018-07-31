@@ -76,7 +76,7 @@ hidden3 = 256
 num_classes = 10
 
 model = nn.Sequential(
-    nn.Conv2d(3, channel0),
+    nn.Conv2d(3, channel0, kernel_size=3, stride=1, padding=1),
     model.bn_relu_conv(channel0, channel1, dropout=dropout),
     model.bn_relu_conv(channel1, channel2, dropout=dropout),
     model.bn_relu_conv(channel2, channel3, dropout=dropout),
