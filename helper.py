@@ -8,7 +8,7 @@ class Mode(Enum):
 
 def _check_acc(model, loader, mode, device, dtype):
     if mode == Mode.train:
-        print('checking accuracy in train set')
+        print('checking accuracy in training set')
     elif mode == Mode.val:
         print('checking accuracy in validation set')
     else:

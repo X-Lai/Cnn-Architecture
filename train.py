@@ -18,7 +18,7 @@ def check_accuracy(model):
         _check_acc(model, loader_test, Mode.test, device=device, dtype=dtype)
 
 
-def train(model, optimizer, epochs, print_every=500):
+def train(model, optimizer, epochs, print_every=1000):
     model = model.to(device=device)
     for e in range(epochs):
         for t, (x,y) in enumerate(loader_train):
@@ -63,8 +63,8 @@ loader_val = DataLoader(dataset, batch_size=BATCH_SIZE,
 loader_test = DataLoader(dataset, batch_size=BATCH_SIZE,
                          sampler=sampler.SubsetRandomSampler(range(50000, 60000)))
 
-lr = 0.001
-dropout = 0.5
+lr = 0.005
+dropout = 0.1
 channel1 = 32
 channel2 = 32
 channel3 = 16
@@ -90,4 +90,4 @@ model = nn.Sequential(
 )
 optimizer = optim.Adam(model.parameters(), lr=lr)
 
-train(model, optimizer, epochs=10)
+train(model, optimizer, epochs=50)
