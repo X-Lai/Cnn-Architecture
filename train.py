@@ -63,8 +63,8 @@ loader_val = DataLoader(dataset, batch_size=BATCH_SIZE,
 loader_test = DataLoader(dataset, batch_size=BATCH_SIZE,
                          sampler=sampler.SubsetRandomSampler(range(50000, 60000)))
 
-lr = 0.005
-dropout = 0.1
+lr = 0.001
+dropout = 0.3
 channel1 = 32
 channel2 = 32
 channel3 = 16
