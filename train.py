@@ -64,13 +64,13 @@ loader_test = DataLoader(dataset, batch_size=BATCH_SIZE,
                          sampler=sampler.SubsetRandomSampler(range(50000, 60000)))
 
 lr = 0.001
-channel1 = 4
-channel2 = 4
-channel3 = 4
-channel4 = 4
-hidden1 = 4
-hidden2 = 4
-hidden3 = 4
+channel1 = 32
+channel2 = 32
+channel3 = 16
+channel4 = 16
+hidden1 = 1024
+hidden2 = 512
+hidden3 = 256
 num_classes = 10
 
 model = nn.Sequential(
