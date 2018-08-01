@@ -10,6 +10,7 @@ import torchvision.transforms as T
 import model
 import numpy as np
 import matplotlib.pyplot as plt
+from mxnet import image
 plt.switch_backend('agg')
 
 def check_accuracy(model):
@@ -63,13 +64,15 @@ dtype = torch.float32
 transform = T.Compose([
     T.ToTensor(),
     T.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)),
-    T.ToPILImage(),
-    T.Pad((2,2,2,2)),
-    T.RandomCrop(size=32),
-    T.RandomHorizontalFlip(),
-    T.ToTensor()
+    #T.ToPILImage(),
+    #T.Pad((2,2,2,2)),
+    #T.RandomCrop(size=32),
+    #T.RandomHorizontalFlip(),
+    #T.ToTensor()
 ])
-dataset = cifar10('./cifar-10-batches-py', transform=transform)
+aug_train = image.CreateAugmenter(data_shape=(3, 32, 32), rand_crop=True, rand_mirror=True)
+
+dataset = cifar10('./cifar-10-batches-py', transform=[transform, aug_train])
 
 loader_train = DataLoader(dataset, batch_size=BATCH_SIZE,
                           sampler=sampler.SubsetRandomSampler(range(NUM_TRAIN)))
@@ -79,6 +82,7 @@ loader_val = DataLoader(dataset, batch_size=BATCH_SIZE,
                         sampler=sampler.SubsetRandomSampler(range(NUM_TRAIN, 50000)))
 loader_test = DataLoader(dataset, batch_size=BATCH_SIZE,
                          sampler=sampler.SubsetRandomSampler(range(50000, 60000)))
+
 
 lr = 0.001
 dropout = 0
