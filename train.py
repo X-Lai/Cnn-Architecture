@@ -10,7 +10,7 @@ import torchvision.transforms as T
 import model
 import numpy as np
 import matplotlib.pyplot as plt
-#plt.switch_backend('agg')
+plt.switch_backend('agg')
 
 def check_accuracy(model):
     if model.training:
@@ -22,7 +22,7 @@ def check_accuracy(model):
         _check_acc(model, loader_test, Mode.test, device=device, dtype=dtype)
 
 
-def train(model, optimizer, epochs, print_every=1000, plot_every=1):
+def train(model, optimizer, epochs, print_every=1000, plot_every=20):
     model = model.to(device=device)
     for e in range(epochs):
         for t, (x,y) in enumerate(loader_train):
