@@ -64,28 +64,26 @@ loader_test = DataLoader(dataset, batch_size=BATCH_SIZE,
                          sampler=sampler.SubsetRandomSampler(range(50000, 60000)))
 
 lr = 0.001
-dropout = 0.5
-channel0 = 32
+dropout = 0
 channel1 = 32
 channel2 = 32
-channel3 = 16
-channel4 = 16
-hidden1 = 1024
-hidden2 = 512
-hidden3 = 256
+channel3 = 64
+channel4 = 64
+hidden1 = 256
 num_classes = 10
 
 model = nn.Sequential(
-    nn.Conv2d(3, channel0, kernel_size=3, stride=1, padding=1),
-    model.bn_relu_conv(channel0, channel1, dropout=dropout),
-    model.bn_relu_conv(channel1, channel2, dropout=dropout),
-    model.bn_relu_conv(channel2, channel3, dropout=dropout),
-    model.bn_relu_conv(channel3, channel4, dropout=dropout),
+    model.conv_relu_conv_relu_pool(in_channel=3, mid_channel=channel1, kernel_size1=3, stride1=1,
+                                   padding1=1, out_channel=channel2, kernel_size2=3, stride2=1,
+                                   padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
+                                   bn=False, dropout=dropout),
+    model.conv_relu_conv_relu_pool(in_channel=channel2, mid_channel=channel3, kernel_size1=3, stride1=1,
+                                   padding1=1, out_channel=channel4, kernel_size2=3, stride2=1,
+                                   padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
+                                   bn=False, dropout=dropout),
     model.Flatten(),
-    model.affine_relu(channel4*32*32, hidden1, dropout=dropout),
-    model.affine_relu(hidden1, hidden2, dropout=dropout),
-    model.affine_relu(hidden2, hidden3, dropout=dropout),
-    model.affine_relu(hidden3, num_classes)
+    model.affine_relu(channel4*8*8, hidden1, bn=False, dropout=dropout),
+    model.affine_relu(hidden1, num_classes, bn=False, dropout=dropout)
 )
 optimizer = optim.Adam(model.parameters(), lr=lr)
 
