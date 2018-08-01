@@ -8,12 +8,16 @@ from torch.utils.data import DataLoader, sampler
 from dataset import cifar10
 import torchvision.transforms as T
 import model
-
+import numpy as np
+import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 
 def check_accuracy(model):
     if model.training:
-        _check_acc(model, loader_train_test, Mode.train, device=device, dtype=dtype)
-        _check_acc(model, loader_val, Mode.val, device=device, dtype=dtype)
+        train_acc = _check_acc(model, loader_train_test, Mode.train, device=device, dtype=dtype)
+        val_acc = _check_acc(model, loader_val, Mode.val, device=device, dtype=dtype)
+        a.append(train_acc)
+        b.append(val_acc)
     else:
         _check_acc(model, loader_test, Mode.test, device=device, dtype=dtype)
 
@@ -21,10 +25,6 @@ def check_accuracy(model):
 def train(model, optimizer, epochs, print_every=1000):
     model = model.to(device=device)
     for e in range(epochs):
-        if e == 50:
-            optimizer.lr = 0.01
-        if e == 80:
-            optimizer.lr = 0.001
         for t, (x,y) in enumerate(loader_train):
             model.train()
             x = x.to(device=device, dtype=dtype)
@@ -41,7 +41,12 @@ def train(model, optimizer, epochs, print_every=1000):
                 print('Epoch %d, Iteration %d, loss = %.4f' % (e, t, loss))
                 check_accuracy(model)
                 print()
+    plt.plot(np.arange(epochs), a, np.arange(epochs), b)
+    plt.ylim(0,1)
+    plt.savefig("./temp.png")
 
+a = []
+b = []
 BATCH_SIZE = 128
 NUM_TRAIN = 49000
 
@@ -82,25 +87,26 @@ hidden1 = 128
 num_classes = 10
 
 model = nn.Sequential(
-    # model.conv_relu_conv_relu_pool(in_channel=3, mid_channel=channel1, kernel_size1=3, stride1=1,
-    #                                padding1=1, out_channel=channel2, kernel_size2=3, stride2=1,
-    #                                padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
-    #                                bn=True, dropout=dropout),
-    # model.conv_relu_conv_relu_pool(in_channel=channel2, mid_channel=channel3, kernel_size1=3, stride1=1,
-    #                                padding1=1, out_channel=channel4, kernel_size2=3, stride2=1,
-    #                                padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
-    #                                bn=True, dropout=dropout),
-    model.conv_relu_pool(in_channel=3, out_channel=20, conv_kernel_size=5,
-                         conv_stride=1, conv_padding=2, pool_kernel_size=2,
-                         pool_stride=2, pool_padding=0, bn=False, dropout=dropout),
-    model.conv_relu_pool(in_channel=20, out_channel=50, conv_kernel_size=3,
-                         conv_stride=1, conv_padding=1, pool_kernel_size=2,
-                         pool_stride=2, pool_padding=0, bn=False, dropout=dropout),
+    model.conv_relu_conv_relu_pool(in_channel=3, mid_channel=channel1, kernel_size1=3, stride1=1,
+                                   padding1=1, out_channel=channel2, kernel_size2=3, stride2=1,
+                                   padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
+                                   bn=True, dropout=dropout),
+    model.conv_relu_conv_relu_pool(in_channel=channel2, mid_channel=channel3, kernel_size1=3, stride1=1,
+                                   padding1=1, out_channel=channel4, kernel_size2=3, stride2=1,
+                                   padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
+                                   bn=True, dropout=dropout),
+#     model.conv_relu_pool(in_channel=3, out_channel=20, conv_kernel_size=5,
+#                          conv_stride=1, conv_padding=2, pool_kernel_size=2,
+#                          pool_stride=2, pool_padding=0, bn=True, dropout=dropout),
+#     model.conv_relu_pool(in_channel=20, out_channel=50, conv_kernel_size=3,
+#                          conv_stride=1, conv_padding=1, pool_kernel_size=2,
+#                          pool_stride=2, pool_padding=0, bn=True, dropout=dropout),
     model.Flatten(),
-    model.affine_relu(50*8*8, hidden1, bn=False, dropout=dropout),
+    # model.affine_relu(50*8*8, hidden1, bn=True, dropout=dropout),
+    model.affine_relu(channel4*8*8, hidden1, bn=True, dropout=dropout),
     nn.Linear(hidden1, num_classes)
 )
-#optimizer = optim.Adam(model.parameters(), lr=lr)
-optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4, nesterov=True)
+optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=0)
+#optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4, nesterov=True)
 
-train(model, optimizer, epochs=200)
+train(model, optimizer, epochs=300)
