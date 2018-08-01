@@ -21,6 +21,10 @@ def check_accuracy(model):
 def train(model, optimizer, epochs, print_every=1000):
     model = model.to(device=device)
     for e in range(epochs):
+        if e == 50:
+            optimizer.lr = 0.01
+        if e == 80:
+            optimizer.lr = 0.001
         for t, (x,y) in enumerate(loader_train):
             model.train()
             x = x.to(device=device, dtype=dtype)
@@ -38,7 +42,7 @@ def train(model, optimizer, epochs, print_every=1000):
                 check_accuracy(model)
                 print()
 
-BATCH_SIZE = 64
+BATCH_SIZE = 128
 NUM_TRAIN = 49000
 
 USE_GPU = True
@@ -54,7 +58,7 @@ transform = T.Compose([
     T.RandomCrop(size=32),
     T.RandomHorizontalFlip(),
     T.ToTensor(),
-    T.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+    T.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
 ])
 dataset = cifar10('./cifar-10-batches-py', transform=transform)
 
@@ -92,8 +96,8 @@ model = nn.Sequential(
                          conv_stride=1, conv_padding=1, pool_kernel_size=2,
                          pool_stride=2, pool_padding=0, bn=False, dropout=dropout),
     model.Flatten(),
-    model.affine_relu(channel4*8*8, hidden1, bn=False, dropout=dropout),
-    model.affine_relu(hidden1, num_classes, bn=False, dropout=dropout)
+    model.affine_relu(50*8*8, hidden1, bn=False, dropout=dropout),
+    nn.Linear(hidden1, num_classes)
 )
 #optimizer = optim.Adam(model.parameters(), lr=lr)
 optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4, nesterov=True)
