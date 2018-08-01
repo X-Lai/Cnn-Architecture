@@ -57,7 +57,7 @@ class cifar10(Dataset):
         # print('image.shape = %s' % str(image.data.shape))
         if self.transform:
             image = self.transform(image)
-        image = augment(image, self.aug_train)
+        # image = augment(image, self.aug_train)
         # print(image.shape)
         # print(image)
         # input()
