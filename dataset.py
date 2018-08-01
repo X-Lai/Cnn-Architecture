@@ -41,7 +41,7 @@ class cifar10(Dataset):
         label = self.labels[index]
         if self.transform:
             image = self.transform(image)
-        #print('image.shape = %s' % str(image.data.shape))
+
         return image, label
 
     def __len__(self):

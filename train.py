@@ -61,13 +61,13 @@ else:
 dtype = torch.float32
 
 transform = T.Compose([
+    T.ToTensor(),
+    T.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)),
     T.ToPILImage(),
-    T.Pad(padding=(2,2,2,2)),
+    T.Pad((2,2,2,2)),
     T.RandomCrop(size=32),
     T.RandomHorizontalFlip(),
-    T.RandomVerticalFlip(),
-    T.ToTensor(),
-    T.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
+    T.ToTensor()
 ])
 dataset = cifar10('./cifar-10-batches-py', transform=transform)
 
@@ -91,28 +91,28 @@ hidden2 = 56
 num_classes = 10
 
 model = nn.Sequential(
-    model.conv_relu_conv_relu_pool(in_channel=3, mid_channel=channel1, kernel_size1=3, stride1=1,
-                                   padding1=1, out_channel=channel2, kernel_size2=3, stride2=1,
-                                   padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
-                                   bn=True, dropout=dropout),
-    model.conv_relu_conv_relu_pool(in_channel=channel2, mid_channel=channel3, kernel_size1=3, stride1=1,
-                                   padding1=1, out_channel=channel4, kernel_size2=3, stride2=1,
-                                   padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
-                                   bn=True, dropout=dropout),
-#     model.conv_relu_pool(in_channel=3, out_channel=20, conv_kernel_size=5,
-#                          conv_stride=1, conv_padding=2, pool_kernel_size=2,
-#                          pool_stride=2, pool_padding=0, bn=True, dropout=dropout),
-#     model.conv_relu_pool(in_channel=20, out_channel=50, conv_kernel_size=3,
-#                          conv_stride=1, conv_padding=1, pool_kernel_size=2,
-#                          pool_stride=2, pool_padding=0, bn=True, dropout=dropout),
+    # model.conv_relu_conv_relu_pool(in_channel=3, mid_channel=channel1, kernel_size1=3, stride1=1,
+    #                                padding1=1, out_channel=channel2, kernel_size2=3, stride2=1,
+    #                                padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
+    #                                bn=True, dropout=dropout),
+    # model.conv_relu_conv_relu_pool(in_channel=channel2, mid_channel=channel3, kernel_size1=3, stride1=1,
+    #                                padding1=1, out_channel=channel4, kernel_size2=3, stride2=1,
+    #                                padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
+    #                                bn=True, dropout=dropout),
+    model.conv_relu_pool(in_channel=3, out_channel=20, conv_kernel_size=5,
+                         conv_stride=1, conv_padding=2, pool_kernel_size=2,
+                         pool_stride=2, pool_padding=0, bn=False, dropout=dropout),
+    model.conv_relu_pool(in_channel=20, out_channel=50, conv_kernel_size=3,
+                         conv_stride=1, conv_padding=1, pool_kernel_size=2,
+                         pool_stride=2, pool_padding=0, bn=False, dropout=dropout),
     model.Flatten(),
-    # model.affine_relu(50*8*8, hidden1, bn=True, dropout=dropout),
+    model.affine_relu(50*8*8, hidden1, bn=False, dropout=dropout),
     # model.affine_relu(3*32*32, num_classes, bn=False, dropout = dropout)
-    model.affine_relu(channel4*8*8, hidden1, bn=True, dropout=dropout),
-    model.affine_relu(hidden1, hidden2, bn=True, dropout=dropout),
-    nn.Linear(hidden2, num_classes)
+    # model.affine_relu(channel4*8*8, hidden1, bn=False, dropout=dropout),
+    # model.affine_relu(hidden1, hidden2, bn=True, dropout=dropout),
+    nn.Linear(hidden1, num_classes)
 )
-optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=5e-4)
-#optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4, nesterov=True)
+# optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=5e-4)
+optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4, nesterov=True)
 
 train(model, optimizer, epochs=300)
