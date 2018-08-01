@@ -2,6 +2,7 @@ from torch.utils.data import Dataset
 import pickle
 import os.path as osp
 import numpy as np
+import matplotlib.pyplot as plt
 
 def unpickle(file):
     with open(file, 'rb') as f:
@@ -28,7 +29,7 @@ class cifar10(Dataset):
         self.labels = []
         for filename in self.filenames:
             dict = unpickle(filename)
-            data = dict['data'].reshape(-1,32,32,3)
+            data = np.transpose(dict['data'].reshape(10000,3,32,32), (0,2,3,1))
             #print('data.shape = %s' % str(data.shape))
             self.images = self.images + list(data)
             self.labels = self.labels + dict['labels']

@@ -57,6 +57,7 @@ transform = T.Compose([
     T.Pad(padding=(2,2,2,2)),
     T.RandomCrop(size=32),
     T.RandomHorizontalFlip(),
+    T.RandomVerticalFlip(),
     T.ToTensor(),
     T.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
 ])
