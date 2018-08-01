@@ -26,3 +26,4 @@ def _check_acc(model, loader, mode, device, dtype):
             num_samples += preds.size(0)
         acc = float(num_correct) / num_samples
         print('accuracy %d / %d (%.2f/100)' % (num_correct, num_samples, acc*100))
+    return acc

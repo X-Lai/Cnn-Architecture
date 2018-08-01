@@ -10,7 +10,7 @@ import torchvision.transforms as T
 import model
 import numpy as np
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
+#plt.switch_backend('agg')
 
 def check_accuracy(model):
     if model.training:
@@ -22,7 +22,7 @@ def check_accuracy(model):
         _check_acc(model, loader_test, Mode.test, device=device, dtype=dtype)
 
 
-def train(model, optimizer, epochs, print_every=1000):
+def train(model, optimizer, epochs, print_every=1000, plot_every=1):
     model = model.to(device=device)
     for e in range(epochs):
         for t, (x,y) in enumerate(loader_train):
@@ -41,9 +41,12 @@ def train(model, optimizer, epochs, print_every=1000):
                 print('Epoch %d, Iteration %d, loss = %.4f' % (e, t, loss))
                 check_accuracy(model)
                 print()
-    plt.plot(np.arange(epochs), a, np.arange(epochs), b)
-    plt.ylim(0,1)
-    plt.savefig("./temp.png")
+
+        if e % plot_every == 0 and e > 0:
+            plt.plot(np.arange(len(a)), a, 'b', np.arange(len(b)), b, 'y')
+            plt.ylim(0,1)
+            # plt.show()
+            plt.savefig("./logs/Epoch %d.png" % e)
 
 a = []
 b = []
@@ -84,6 +87,7 @@ channel2 = 32
 channel3 = 64 
 channel4 = 64
 hidden1 = 128
+hidden2 = 56
 num_classes = 10
 
 model = nn.Sequential(
@@ -103,10 +107,12 @@ model = nn.Sequential(
 #                          pool_stride=2, pool_padding=0, bn=True, dropout=dropout),
     model.Flatten(),
     # model.affine_relu(50*8*8, hidden1, bn=True, dropout=dropout),
+    # model.affine_relu(3*32*32, num_classes, bn=False, dropout = dropout)
     model.affine_relu(channel4*8*8, hidden1, bn=True, dropout=dropout),
-    nn.Linear(hidden1, num_classes)
+    model.affine_relu(hidden1, hidden2, bn=True, dropout=dropout),
+    nn.Linear(hidden2, num_classes)
 )
-optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=0)
+optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=5e-4)
 #optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4, nesterov=True)
 
 train(model, optimizer, epochs=300)
