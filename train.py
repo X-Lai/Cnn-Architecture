@@ -49,6 +49,10 @@ else:
 dtype = torch.float32
 
 transform = T.Compose([
+    T.ToPILImage(),
+    T.Pad(padding=(2,2,2,2)),
+    T.RandomCrop(size=32),
+    T.RandomHorizontalFlip(),
     T.ToTensor(),
     T.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
 ])
