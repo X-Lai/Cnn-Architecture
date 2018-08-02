@@ -10,7 +10,7 @@ import torchvision.transforms as T
 import model
 import numpy as np
 import matplotlib.pyplot as plt
-from torchsample.torchsample.transforms.tensor_transforms import Pad, RandomCrop, RandomFlip, AddChannel
+from tensor_transforms import Pad, RandomCrop, RandomFlip, AddChannel
 plt.switch_backend('agg')
 
 def check_accuracy(model):

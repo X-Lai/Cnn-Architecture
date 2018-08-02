@@ -45,10 +45,6 @@ class cifar10(Dataset):
         # print(image)
         # input()
         image = image.view(3,32,32)
-        # image = augment(image, self.aug_train)
-        # print(image.shape)
-        # print(image)
-        # input()
         return image, label
 
     def __len__(self):
