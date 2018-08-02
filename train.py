@@ -8,9 +8,10 @@ from torch.utils.data import DataLoader, sampler
 from dataset import cifar10
 import torchvision.transforms as T
 import model
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import numpy as np
 import matplotlib.pyplot as plt
-from tensor_transforms import Pad, RandomCrop, RandomFlip, AddChannel
+from tensor_transforms import Pad, RandomCrop, RandomFlip
 plt.switch_backend('agg')
 
 def check_accuracy(model):
@@ -19,11 +20,13 @@ def check_accuracy(model):
         val_acc = _check_acc(model, loader_val, Mode.val, device=device, dtype=dtype)
         a.append(train_acc)
         b.append(val_acc)
+        return val_acc
     else:
         _check_acc(model, loader_test, Mode.test, device=device, dtype=dtype)
 
 
 def train(model, optimizer, epochs, print_every=1000, plot_every=20):
+    scheduler = ReduceLROnPlateau(optimizer=optimizer, mode='max', factor=0.1, patience=30, verbose=True)
     model = model.to(device=device)
     for e in range(epochs):
         for t, (x,y) in enumerate(loader_train):
@@ -40,7 +43,8 @@ def train(model, optimizer, epochs, print_every=1000, plot_every=20):
 
             if t % print_every == 0:
                 print('Epoch %d, Iteration %d, loss = %.4f' % (e, t, loss))
-                check_accuracy(model)
+                val_acc = check_accuracy(model)
+                scheduler.step(val_acc)
                 print()
 
         if e % plot_every == 0 and e > 0:
