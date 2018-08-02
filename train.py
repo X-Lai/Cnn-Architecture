@@ -10,7 +10,7 @@ import torchvision.transforms as T
 import model
 import numpy as np
 import matplotlib.pyplot as plt
-from mxnet import image
+from torchsample.torchsample.transforms.tensor_transforms import Pad, RandomCrop, RandomFlip, AddChannel
 plt.switch_backend('agg')
 
 def check_accuracy(model):
@@ -64,15 +64,12 @@ dtype = torch.float32
 transform = T.Compose([
     T.ToTensor(),
     T.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)),
-    #T.ToPILImage(),
-    #T.Pad((2,2,2,2)),
-    #T.RandomCrop(size=32),
-    #T.RandomHorizontalFlip(),
-    #T.ToTensor()
+    Pad(size=(2,2,2,2)),
+    RandomCrop(size=(32,32)),
+    RandomFlip(h=True),
 ])
-aug_train = image.CreateAugmenter(data_shape=(3, 32, 32), rand_crop=True, rand_mirror=True)
 
-dataset = cifar10('./cifar-10-batches-py', transform=[transform, aug_train])
+dataset = cifar10('./cifar-10-batches-py', transform=transform)
 
 loader_train = DataLoader(dataset, batch_size=BATCH_SIZE,
                           sampler=sampler.SubsetRandomSampler(range(NUM_TRAIN)))
