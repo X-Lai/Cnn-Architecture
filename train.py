@@ -104,14 +104,20 @@ model = nn.Sequential(
     #                                padding1=1, out_channel=channel4, kernel_size2=3, stride2=1,
     #                                padding2=1, pool_kernel_size=2, pool_stride=2, pool_padding=0,
     #                                bn=True, dropout=dropout),
-    model.conv_relu_pool(in_channel=3, out_channel=20, conv_kernel_size=5,
-                         conv_stride=1, conv_padding=2, pool_kernel_size=2,
-                         pool_stride=2, pool_padding=0, bn=False, dropout=dropout),
-    model.conv_relu_pool(in_channel=20, out_channel=50, conv_kernel_size=3,
-                         conv_stride=1, conv_padding=1, pool_kernel_size=2,
-                         pool_stride=2, pool_padding=0, bn=False, dropout=dropout),
+    # model.conv_relu_pool(in_channel=3, out_channel=20, conv_kernel_size=5,
+    #                      conv_stride=1, conv_padding=2, pool_kernel_size=2,
+    #                      pool_stride=2, pool_padding=0, bn=False, dropout=dropout),
+    # model.conv_relu_pool(in_channel=20, out_channel=50, conv_kernel_size=3,
+    #                      conv_stride=1, conv_padding=1, pool_kernel_size=2,
+    #                      pool_stride=2, pool_padding=0, bn=False, dropout=dropout),
+    nn.Conv2d(in_channels=3, out_channels=20, kernel_size=5),
+    nn.ReLU(),
+    nn.MaxPool2d(kernel_size=2, stride=2),
+    nn.Conv2d(in_channels=20, out_channels=50, kernel_size=3),
+    nn.ReLU(),
+    nn.MaxPool2d(kernel_size=2, stride=2),
     model.Flatten(),
-    model.affine_relu(50*8*8, hidden1, bn=False, dropout=dropout),
+    model.affine_relu(50*6*6, hidden1, bn=False, dropout=dropout),
     # model.affine_relu(3*32*32, num_classes, bn=False, dropout = dropout)
     # model.affine_relu(channel4*8*8, hidden1, bn=False, dropout=dropout),
     # model.affine_relu(hidden1, hidden2, bn=True, dropout=dropout),
@@ -119,5 +125,7 @@ model = nn.Sequential(
 )
 # optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=5e-4)
 optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4, nesterov=True)
+
+print(optimizer.lr)
 
 train(model, optimizer, epochs=300)
