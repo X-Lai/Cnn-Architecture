@@ -26,7 +26,7 @@ def check_accuracy(model):
 
 
 def train(model, optimizer, epochs, print_every=1000, plot_every=20):
-    scheduler = ReduceLROnPlateau(optimizer=optimizer, mode='max', factor=0.1, patience=30, verbose=True)
+    scheduler = ReduceLROnPlateau(optimizer=optimizer, mode='max', factor=0.1, patience=10, verbose=True)
     model = model.to(device=device)
     for e in range(epochs):
         for t, (x,y) in enumerate(loader_train):
