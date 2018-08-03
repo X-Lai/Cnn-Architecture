@@ -68,7 +68,7 @@ dtype = torch.float32
 transform = T.Compose([
     T.ToTensor(),
     T.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)),
-    Pad(size=(2,2,2,2)),
+    Pad(size=(3,36,36)),
     RandomCrop(size=(32,32)),
     RandomFlip(h=True),
 ])
@@ -125,7 +125,5 @@ model = nn.Sequential(
 )
 # optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=5e-4)
 optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4, nesterov=True)
-
-print(optimizer.lr)
 
 train(model, optimizer, epochs=300)

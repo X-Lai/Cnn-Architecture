@@ -44,7 +44,6 @@ class cifar10(Dataset):
         # print(image.data.shape)
         # print(image)
         # input()
-        image = image.view(3,32,32)
         return image, label
 
     def __len__(self):
