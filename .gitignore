@@ -4,3 +4,4 @@ venv
 .idea/
 logs/
 optimizer.py
+cifar-10-batches-py.tar.xz
