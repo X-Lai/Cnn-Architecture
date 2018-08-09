@@ -1,17 +1,17 @@
-from helper import _check_acc, Mode
+from lenet_aug.helper import _check_acc, Mode
 import random
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, sampler
-from dataset import cifar10
+from lenet_aug.dataset import cifar10
 import torchvision.transforms as T
-import model
+import lenet_aug.model as model
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import numpy as np
 import matplotlib.pyplot as plt
-from tensor_transforms import Pad, RandomCrop, RandomFlip
+from lenet_aug.tensor_transforms import Pad, RandomCrop, RandomFlip
 plt.switch_backend('agg')
 
 def check_accuracy(model):
