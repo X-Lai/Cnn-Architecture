@@ -11,7 +11,6 @@ import lenet_aug.model as model
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import numpy as np
 import matplotlib.pyplot as plt
-from lenet_aug.tensor_transforms import Pad, RandomCrop, RandomFlip
 plt.switch_backend('agg')
 
 def check_accuracy(model):
@@ -68,9 +67,6 @@ dtype = torch.float32
 transform = T.Compose([
     T.ToTensor(),
     T.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)),
-    Pad(size=(3,36,36)),
-    RandomCrop(size=(32,32)),
-    RandomFlip(h=True),
 ])
 
 dataset = cifar10('./cifar-10-batches-py', transform=transform)
