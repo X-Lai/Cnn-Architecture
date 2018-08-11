@@ -1,4 +1,45 @@
 import torch.nn as nn
+import torch.nn.functional as F
+
+class ResNet(nn.Module):
+    def __init__(self, channels, layers, same_shape=True):
+        super(ResNet, self).__init__()
+        self.resnet = []
+        self.resnet.append(Residual(channels, same_shape=same_shape))
+        for it in range(layers-1):
+            self.resnet.append(Residual(channels, same_shape=True))
+    def forward(self, x):
+        out = x
+        for resnet in self.resnet:
+            out = resnet(out)
+        return out
+
+class Residual(nn.Module):
+    def __init__(self, channels, same_shape=True):
+        super(Residual, self).__init__()
+        stride = 1
+        in_channels = channels
+        self.same_shape = same_shape
+        if not same_shape:
+            stride = 2
+            in_channels = channels // 2
+            self.conv3 = nn.Conv2d(in_channels=in_channels, out_channels=channels,
+                                   kernel_size=3, stride=stride, padding=1)
+        self.bn1 = nn.BatchNorm2d(in_channels)
+        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=channels,
+                               kernel_size=3, stride=stride, padding=1)
+        self.bn2 = nn.BatchNorm2d(channels)
+        self.conv2 = nn.Conv2d(in_channels=channels, out_channels=channels,
+                               kernel_size=3, stride=1, padding=1)
+    def forward(self, x):
+
+        # print(x.shape)
+
+        out = self.conv1(F.relu(self.bn1(x)))
+        out = self.conv2(F.relu(self.bn2(out)))
+        if self.same_shape:
+            return out + x
+        return out + self.conv3(x)
 
 class conv_relu_pool(nn.Module):
     def __init__(self, in_channel, out_channel, conv_kernel_size, conv_stride, conv_padding,
@@ -84,4 +125,5 @@ class affine_relu(nn.Module):
 
 class Flatten(nn.Module):
     def forward(self, x):
+        print(x.shape)
         return x.view(x.size(0), -1)

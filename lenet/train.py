@@ -1,13 +1,13 @@
-from lenet_aug.helper import _check_acc, Mode
+from lenet.helper import _check_acc, Mode
 import random
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, sampler
-from lenet_aug.dataset import cifar10
+from lenet.dataset import cifar10
 import torchvision.transforms as T
-import lenet_aug.model as model
+import lenet.model as model
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import numpy as np
 import matplotlib.pyplot as plt
