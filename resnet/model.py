@@ -4,7 +4,7 @@ import torch.nn.functional as F
 class ResNet(nn.Module):
     def __init__(self, channels, layers, same_shape=True):
         super(ResNet, self).__init__()
-        self.resnet = []
+        self.resnet = nn.ModuleList([])
         self.resnet.append(Residual(channels, same_shape=same_shape))
         for it in range(layers-1):
             self.resnet.append(Residual(channels, same_shape=True))
@@ -15,7 +15,7 @@ class ResNet(nn.Module):
         return out
 
 class Residual(nn.Module):
-    def __init__(self, channels, same_shape=True):
+    def __init__(self, channels, same_shape=True, weight_init=True):
         super(Residual, self).__init__()
         stride = 1
         in_channels = channels
@@ -31,10 +31,12 @@ class Residual(nn.Module):
         self.bn2 = nn.BatchNorm2d(channels)
         self.conv2 = nn.Conv2d(in_channels=channels, out_channels=channels,
                                kernel_size=3, stride=1, padding=1)
+        if weight_init:
+            nn.init.kaiming_normal_(self.conv1.weight, nonlinearity='relu')
+            nn.init.kaiming_normal_(self.conv2.weight, nonlinearity='relu')
+            if not same_shape:
+                nn.init.kaiming_normal_(self.conv3.weight, nonlinearity='relu')
     def forward(self, x):
-
-        # print(x.shape)
-
         out = self.conv1(F.relu(self.bn1(x)))
         out = self.conv2(F.relu(self.bn2(out)))
         if self.same_shape:
@@ -125,5 +127,4 @@ class affine_relu(nn.Module):
 
 class Flatten(nn.Module):
     def forward(self, x):
-        print(x.shape)
         return x.view(x.size(0), -1)

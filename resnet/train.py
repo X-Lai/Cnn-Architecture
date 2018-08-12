@@ -80,7 +80,6 @@ loader_val = DataLoader(dataset, batch_size=BATCH_SIZE,
 loader_test = DataLoader(dataset, batch_size=BATCH_SIZE,
                          sampler=sampler.SubsetRandomSampler(range(50000, 60000)))
 
-
 dropout = 0
 hidden1 = 128
 num_classes = 10
@@ -90,10 +89,15 @@ model = nn.Sequential(
     model.ResNet(channels=16, layers=9, same_shape=True),
     model.ResNet(channels=32, layers=9, same_shape=False),
     model.ResNet(channels=64, layers=9, same_shape=False),
+    nn.BatchNorm2d(64),
+    nn.ReLU(),
     nn.AvgPool2d(kernel_size=8),
     model.Flatten(),
     nn.Linear(64, 10)
 )
+
+nn.init.kaiming_normal_(model[0].weight, nonlinearity='relu')
+nn.init.kaiming_normal_(model[8].weight, nonlinearity='relu')
 
 optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-4, nesterov=True)
 
