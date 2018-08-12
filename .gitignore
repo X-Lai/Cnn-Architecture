@@ -5,3 +5,4 @@ venv
 logs/
 optimizer.py
 cifar-10-batches-py.tar.xz
+cifar-10-batches-py.tar
