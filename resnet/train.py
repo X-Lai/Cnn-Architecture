@@ -1,13 +1,13 @@
-from resnet.helper import _check_acc, Mode
+from helper import _check_acc, Mode
 import random
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, sampler
-from resnet.dataset import cifar10
+from dataset import cifar10
 import torchvision.transforms as T
-import resnet.model as model
+import model as model
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import numpy as np
 import matplotlib.pyplot as plt
