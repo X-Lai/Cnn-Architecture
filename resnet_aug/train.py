@@ -1,4 +1,4 @@
-from helper import _check_acc, Mode
+from helper import _check_acc, Mode, checkpoint_save, checkpoint_load
 import random
 import torch
 import torch.nn.functional as F
@@ -24,10 +24,14 @@ def check_accuracy(model):
     else:
         _check_acc(model, loader_test, Mode.test, device=device, dtype=dtype)
 
+def test(model):
+    return _check_acc(model, loader_test, Mode.test, device=device, dtype=dtype)
 
-def train(model, optimizer, epochs, print_every=1000, plot_every=20):
+def train(model, optimizer, epochs, print_every=1000, plot_every=20, save_every=20):
     scheduler = ReduceLROnPlateau(optimizer=optimizer, mode='max', factor=0.1, patience=10, verbose=True)
     model = model.to(device=device)
+    best_acc = 0.0
+    best_state = {'model': model.state_dict(), 'optimizer': optimizer.state_dict()}
     for e in range(epochs):
         for t, (x,y) in enumerate(loader_train):
             model.train()
@@ -44,6 +48,9 @@ def train(model, optimizer, epochs, print_every=1000, plot_every=20):
             if t % print_every == 0:
                 print('Epoch %d, Iteration %d, loss = %.4f' % (e, t, loss))
                 val_acc = check_accuracy(model)
+                if val_acc > best_acc:
+                    best_acc = val_acc
+                    best_state = {'model': model.state_dict(), 'optimizer': optimizer.state_dict()}
                 scheduler.step(val_acc)
                 print()
 
@@ -53,10 +60,15 @@ def train(model, optimizer, epochs, print_every=1000, plot_every=20):
             # plt.show()
             plt.savefig("./logs/Epoch %d.png" % e)
 
+        if e % save_every == 0 and e > 0:
+            checkpoint_save(model=None, optimizer=None, state=best_state)
+            print("best accuracy = %f" % best_acc)
+
 a = []
 b = []
 BATCH_SIZE = 128
 NUM_TRAIN = 49000
+TRAIN = True
 
 USE_GPU = True
 if USE_GPU and torch.cuda.is_available():
@@ -105,4 +117,8 @@ nn.init.kaiming_normal_(model[8].weight, nonlinearity='relu')
 
 optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-4, nesterov=True)
 
-train(model, optimizer, epochs=300)
+if TRAIN:
+    train(model, optimizer, epochs=300)
+else:
+    checkpoint_load(model, optimizer)
+    test(model)

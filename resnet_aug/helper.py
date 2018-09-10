@@ -27,3 +27,18 @@ def _check_acc(model, loader, mode, device, dtype):
         acc = float(num_correct) / num_samples
         print('accuracy %d / %d (%.2f/100)' % (num_correct, num_samples, acc*100))
     return acc
+
+def checkpoint_save(model, optimizer, state=None):
+    if state == None:
+        state = {
+            'model': model.state_dict(),
+            'optimizer': optimizer.state_dict()
+        }
+    torch.save(state, './state')
+    print('model and optimizer saved to %s' % 'state')
+
+def checkpoint_load(model, optimizer):
+    state = torch.load('./state')
+    model.load_state_dict(state['model'])
+    optimizer.load_state_dict(state['optimizer'])
+    print('model and optimizer loaded')
