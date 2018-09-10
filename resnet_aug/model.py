@@ -24,7 +24,7 @@ class Residual(nn.Module):
             stride = 2
             in_channels = channels // 2
             self.conv3 = nn.Conv2d(in_channels=in_channels, out_channels=channels,
-                                   kernel_size=1, stride=stride)
+                                   kernel_size=2, stride=stride)
         self.bn1 = nn.BatchNorm2d(in_channels)
         self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=channels,
                                kernel_size=3, stride=stride, padding=1)
